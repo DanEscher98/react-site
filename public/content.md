@@ -3,7 +3,6 @@
 La `subshell` como equivalente a la oración subordinada, apuntará a un
 isomorfismo en tonalidad poética?
 
-
 ```plaintext
 Mi memoras,
     ke vi diris al mi
@@ -43,8 +42,6 @@ $$
     F(x) &= \int^a_b \frac{1}{3}x^3
 \end{aligned}
 $$
-
-
 
 ## Image
 
