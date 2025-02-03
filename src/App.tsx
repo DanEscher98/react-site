@@ -1,22 +1,32 @@
-import { useState } from 'react'
+import BrandShowcase, { BrandConcept } from './components/BrandVisualizer'
+
+export const polymathNebula: BrandConcept = {
+  name: "Polymath Nebula",
+  tagline: [
+    "Connecting melodies across universes",
+    "Conectando melodias a través de universos"
+  ],
+  palette: {
+    base: "#222222", // Charcoal: Modern sophistication with depth (neutral, grounded)
+    accent: "#FF4D89", // Electric Pink: Vibrant, bold, and youthful energy
+    contrast: "#00D1C1", // Electric Teal: Clean, tech-forward, dynamic
+    secondary: "#FFB81C", // Solar Yellow: Playful and energetic, adding warmth and vibrancy
+    neutral: "#F4F4F4", // Soft Gray: Calm, balanced, and easy on the eyes
+    background: "#FF5C8D", // Gradient Pink: Evokes digital spaces and futuristic vibes
+  },
+  typography: {
+    logo: "Orbitron", // Futuristic, playful, and tech-inspired font, perfect for logo
+    primary: "Poppins", // Clean, modern, approachable sans-serif for body text
+    secondary: "Space Grotesk", // A tech-inspired typeface for subheadings and detail
+    headers: "Oswald", // Strong and professional for headers
+  },
+};
+
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <div className='min-h-screen bg-gradient-to-br from-purple-500 to-indigo-800 flex flex-col items-center justify-center'>
-      <h1 className='text-4xl text-white mb-8 font-bold font-audiowide'>DanEscher98 React Site</h1>
-      <div className='bg-purple-700 rounded-lg p-8 shadow-lg neon-border'>
-        <button
-          onClick={() => setCount((count) => count + 1)}
-          className='bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded'
-        >
-          count is {count}
-        </button>
-        <p className='mt-4 text-purple-200'>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
+    <div className="p-8 bg-gray-100 min-h-screen">
+      <BrandShowcase brand={polymathNebula} />
     </div>
   )
 }
