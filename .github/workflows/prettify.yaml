@@ -2,8 +2,7 @@ name: Prettify Code
 
 on:
   push:
-    branches:
-      - main # Adjust this branch name according to your main branch
+    branches: [ main ]
 
 jobs:
   prettify:
