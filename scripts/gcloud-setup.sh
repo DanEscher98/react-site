@@ -1,9 +1,11 @@
 #!/usr/bin/bash
 
-set -e  # Exit on error
+#set -e  # Exit on error
 #trap 'rm -f ga_key.json' EXIT  # Delete key after script
 
-PROJECT_ID=$1
+IMG_NAME=$1
+PROJECT_ID=$2
+
 SERVICE_ACCOUNT="github-action-sa"
 
 
@@ -14,7 +16,18 @@ done
  
 gcloud iam service-accounts create $SERVICE_ACCOUNT
 
-declare -a ROLES=("run.admin" "storage.admin" "iam.serviceAccountUser" "artifactregistry.admin" "cloudbuild.builds.builder")
+declare -a ROLES=(
+  "run.admin"
+  "storage.admin"
+  "iam.serviceAccountUser"
+  "artifactregistry.admin"
+  "cloudbuild.builds.builder"
+  "cloudbuild.builds.editor"   # Required for Cloud Build
+  "logging.logWriter"
+  "logging.viewer"
+  "cloudbuild.builds.viewer"
+)
+
 for role in "${ROLES[@]}"; do
   gcloud projects add-iam-policy-binding $PROJECT_ID \
     --member="serviceAccount:$SERVICE_ACCOUNT@$PROJECT_ID.iam.gserviceaccount.com" \
@@ -24,5 +37,11 @@ done
 gcloud iam service-accounts keys create ga_key.json \
   --iam-account="$SERVICE_ACCOUNT@$PROJECT_ID.iam.gserviceaccount.com"
 
-gh variable set GCP_PROJECT_ID=$PROJECT_ID
+gcloud projects get-iam-policy $PROJECT_ID \
+  --flatten="bindings[].members" \
+  --filter="bindings.members=serviceAccount:$SERVICE_ACCOUNT@$PROJECT_ID.iam.gserviceaccount.com" \
+  --format="table(bindings.role)"
+
+gh variable set GCP_IMG_NAME -b $IMG_NAME
+gh variable set GCP_PROJECT_ID -b $PROJECT_ID
 gh secret set GCP_SA_KEY -a actions < ga_key.json

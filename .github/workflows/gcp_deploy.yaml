@@ -2,40 +2,46 @@ name: Deploy to Google Cloud Run
 
 on:
   push:
-    branches: [ gcp_deploy ]
+    branches: [ main ]
 
 env:
-  PROJECT_ID: ${{env.GCP_PROJECT_ID}}
+  IMG_NAME: ${{ vars.GCP_IMG_NAME }}
+  PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
   REGION: us-central1
-  SERVICE_NAME: vite-app
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
       - name: Google Auth
         id: auth
-        uses: google-github-actions/auth@v1
+        uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.GCP_SA_KEY }}'
 
       - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1
+        uses: google-github-actions/setup-gcloud@v2
 
-      - name: Build and Push Container
+      - name: Configure Docker
+        run: gcloud auth configure-docker
+
+      - name: Build Docker Image
         run: |
-          gcloud builds submit --tag gcr.io/$PROJECT_ID/$SERVICE_NAME --quiet
+          docker build -t gcr.io/$PROJECT_ID/$IMG_NAME:latest .
+          docker push gcr.io/$PROJECT_ID/$IMG_NAME:latest
 
       - name: Deploy to Cloud Run
         run: |
-          gcloud run deploy $SERVICE_NAME \
-            --image gcr.io/$PROJECT_ID/$SERVICE_NAME \
+          gcloud run deploy $IMG_NAME \
+            --image gcr.io/$PROJECT_ID/$IMG_NAME \
             --platform managed \
             --region $REGION \
             --allow-unauthenticated
+
       - name: Get Service URL
         run: |
-          URL=$(gcloud run services describe $SERVICE_NAME --platform managed --region $REGION --format="value(status.url)")
+          URL=$(gcloud run services describe $IMG_NAME --platform managed --region $REGION --format="value(status.url)")
           echo "Service is available at: $URL"
